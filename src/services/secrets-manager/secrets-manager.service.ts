@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
-import { AWS_CONTEXT_KEY, type AWSContext, type AWSCredentials } from "../context.js";
+import { AWS_CONTEXT_KEY, type AWSContext, type AWSCredentials } from "../../context.js";
 
 /**
  * Service to interact with AWS Secrets Manager.

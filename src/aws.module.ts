@@ -84,13 +84,13 @@ export class AWSModule {
                 const secretsNames = Array.isArray(ctx.secrets)
                     ? ctx.secrets
                     : ctx.secrets
-                      ? [ctx.secrets]
-                      : [];
+                    ? [ctx.secrets]
+                    : [];
 
                 // populate secrets if we have any
                 if (secretsNames.length) {
                     // Only load secrets module if we have secrets to load
-                    const { SecretsManagerService } = await import("./services/secrets-manager.service.js");
+                    const { SecretsManagerService } = await import("./services/secrets-manager/index.js");
 
                     for (const secretName of secretsNames) {
                         ctx._system.defaultSecrets[secretName] = await SecretsManagerService.loadSecret(

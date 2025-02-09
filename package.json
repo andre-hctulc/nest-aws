@@ -1,15 +1,14 @@
 {
     "name": "@andre-hctulc/nest-aws",
     "version": "0.0.1",
-    "description": "Some NestJS utility",
+    "description": "Nest x AWS",
     "main": "dist/index.js",
     "type": "module",
     "exports": {
         ".": "./dist/index.js",
-        "./s3": "./dist/s3/index.js",
-        "./sts": "./dist/sts/index.js",
-        "./secrets-manager": "./dist/secrets-manager/index.js",
-        "./kms": "./dist/kms/index.js"
+        "./s3": "./dist/services/s3/index.js",
+        "./sts": "./dist/services/sts/index.js",
+        "./secrets-manager": "./dist/services/secrets-manager/index.js"
     },
     "scripts": {
         "tc": "tsc --noEmit",
@@ -24,9 +23,12 @@
     "author": "André Thomas",
     "license": "ISC",
     "devDependencies": {
+        "@aws-sdk/client-s3": "^3.744.0",
+        "@aws-sdk/client-secrets-manager": "^3.744.0",
+        "@aws-sdk/client-sts": "^3.744.0",
         "@types/node": "^22.7.4"
     },
     "dependencies": {
-        "@nestjs/common": "^10.4.15"
+        "@nestjs/common": "^11.0.8"
     }
 }

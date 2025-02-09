@@ -8,8 +8,11 @@
 @Module({
     imports: [
         AWSModule.configure({
-            credentials: { ... }, // Or factory
-            services: [S3Service],
+            // Can be a factory
+            context: {
+                credentials: { ... },
+            },
+            services: [configFor(S3Service)],
             global: false,
             defaultRegion: "us-east-1"
         }),
