@@ -10,7 +10,6 @@ import { AWS_CONTEXT_KEY, type AWSContext, type AWSCredentials } from "../../con
 @Injectable()
 export class SecretsManagerService {
     readonly client: SecretsManagerClient;
-    private defaultSecretPromise: Promise<Record<string, any>> | undefined;
     #context: AWSContext;
 
     constructor(@Inject(AWS_CONTEXT_KEY) context: AWSContext) {

@@ -22,4 +22,4 @@ export interface AWSContext {
     };
 }
 
-export const AWS_CONTEXT_KEY = "AWS_CONTEXT";
+export const AWS_CONTEXT_KEY = Symbol("AWS_CONTEXT");

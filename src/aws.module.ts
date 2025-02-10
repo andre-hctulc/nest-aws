@@ -1,3 +1,4 @@
+import { AWS_CONTEXT_KEY, type AWSContext } from "./context.js";
 import {
     Module,
     type DynamicModule,
@@ -5,9 +6,6 @@ import {
     type OptionalFactoryDependency,
     type Provider,
 } from "@nestjs/common";
-import { AWSService } from "./services/aws.service.js";
-import { AWS_CONTEXT_KEY, type AWSContext } from "./context.js";
-import { emptyContext } from "./util.js";
 
 export type AWSServiceInterface = new (context: AWSContext, ...args: any) => any;
 type AWSServiceArgs<T> = T extends new (context: AWSContext, ...args: infer A) => any ? A : never;
@@ -51,20 +49,10 @@ export interface GlobalAWSModuleSetup {
     global?: boolean;
 }
 
-@Module({
-    providers: [
-        AWSService,
-        {
-            provide: AWS_CONTEXT_KEY,
-            useValue: emptyContext(),
-        },
-    ],
-    exports: [AWSService],
-})
+@Module({})
 export class AWSModule {
-    static configure({ context, services, global }: GlobalAWSModuleSetup): DynamicModule {
+    static register({ context, services, global }: GlobalAWSModuleSetup): DynamicModule {
         const ctxInj = "inject" in context ? context.inject || [] : [];
-
         const activeServices: AWSServiceConfig[] = services || [];
 
         let resolveCtx: ((value: UserContext) => Promise<void>) | undefined;
@@ -84,8 +72,8 @@ export class AWSModule {
                 const secretsNames = Array.isArray(ctx.secrets)
                     ? ctx.secrets
                     : ctx.secrets
-                    ? [ctx.secrets]
-                    : [];
+                      ? [ctx.secrets]
+                      : [];
 
                 // populate secrets if we have any
                 if (secretsNames.length) {
@@ -105,7 +93,7 @@ export class AWSModule {
         });
 
         return {
-            module: AWSModule,
+            global,
             providers: [
                 // Context Provide Factory
                 {
@@ -125,8 +113,7 @@ export class AWSModule {
                         }
                     },
                     inject: ctxInj,
-                },
-                // Service factories
+                }, // Service factories
                 ...activeServices.map<Provider>((obj) => {
                     const Service = obj.service;
                     const inj = "inject" in obj.args ? obj.args.inject || [] : [];
@@ -148,9 +135,8 @@ export class AWSModule {
                     };
                 }),
             ],
-            // TODO export context?
+            module: AWSModule,
             exports: [AWS_CONTEXT_KEY, ...activeServices.map(({ service }) => service)],
-            global,
         };
     }
 }
