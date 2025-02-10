@@ -1,6 +1,6 @@
-# nest-aws-v3
+# nest-aws
 
-[NestJS](https://nestjs.com) x AWS
+[NestJS](https://nestjs.com) x AWS (v3)
 
 ## Usage
 

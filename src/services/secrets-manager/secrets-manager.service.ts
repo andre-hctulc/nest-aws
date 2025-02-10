@@ -22,13 +22,14 @@ export class SecretsManagerService {
 
     static async loadSecret(
         credentials: AWSCredentials | SecretsManagerClient,
+        region: string,
         secretName: string,
         versionStage: string = "AWSCURRENT"
     ): Promise<Record<string, any>> {
         const client =
             credentials instanceof SecretsManagerClient
                 ? credentials
-                : new SecretsManagerClient({ credentials });
+                : new SecretsManagerClient({ credentials, region  });
         const response = await client.send(
             new GetSecretValueCommand({
                 SecretId: secretName,
@@ -51,7 +52,7 @@ export class SecretsManagerService {
      * Loads a secret from AWS Secrets Manager.
      */
     async loadSecret(secretName: string, versionStage: string = "AWSCURRENT"): Promise<Record<string, any>> {
-        return SecretsManagerService.loadSecret(this.client, secretName, versionStage);
+        return SecretsManagerService.loadSecret(this.client, this.#context.defaultRegion, secretName, versionStage);
     }
 
     /**

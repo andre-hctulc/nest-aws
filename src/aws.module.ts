@@ -51,7 +51,8 @@ export interface GlobalAWSModuleSetup {
 
 @Module({})
 export class AWSModule {
-    static register({ context, services, global }: GlobalAWSModuleSetup): DynamicModule {
+    // SEE https://docs.nestjs.com/fundamentals/dynamic-modules#community-guidelines for naming conventions
+    static forRoot({ context, services, global }: GlobalAWSModuleSetup): DynamicModule {
         const ctxInj = "inject" in context ? context.inject || [] : [];
         const activeServices: AWSServiceConfig[] = services || [];
 
@@ -69,11 +70,16 @@ export class AWSModule {
                 const ctx = userCtx as AWSContext;
                 // Init system object
                 ctx._system = { defaultSecrets: {} };
+
+                if (!ctx.defaultRegion) {
+                    ctx.defaultRegion = "us-east-1";
+                }
+
                 const secretsNames = Array.isArray(ctx.secrets)
                     ? ctx.secrets
                     : ctx.secrets
-                      ? [ctx.secrets]
-                      : [];
+                    ? [ctx.secrets]
+                    : [];
 
                 // populate secrets if we have any
                 if (secretsNames.length) {
@@ -83,6 +89,7 @@ export class AWSModule {
                     for (const secretName of secretsNames) {
                         ctx._system.defaultSecrets[secretName] = await SecretsManagerService.loadSecret(
                             userCtx.credentials,
+                            ctx.defaultRegion,
                             secretName
                         );
                     }
