@@ -1,10 +1,14 @@
 import { Injectable, PreconditionFailedException } from "@nestjs/common";
 import { STS } from "@aws-sdk/client-sts";
-
-const stsClient = new STS();
+import type { AWSContext } from "../../types.js";
 
 @Injectable()
 export class STSService {
+    private client: STS;
+
+    constructor(context: AWSContext) {
+        this.client = new STS();
+    }
     /**
      * @param cacheTime Cache time in seconds
      */
@@ -18,7 +22,7 @@ export class STSService {
                 : `arn:aws:iam::${roleArn.accountId}:role/${roleArn.roleName}`;
         const sessionName = "AccountXSession";
 
-        const { Credentials } = await stsClient.assumeRole({
+        const { Credentials } = await this.client.assumeRole({
             RoleArn: arn,
             RoleSessionName: sessionName,
             DurationSeconds: cacheTime,

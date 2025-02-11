@@ -1,6 +1,6 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
-import { AWS_CONTEXT_KEY, type AWSContext, type AWSCredentials } from "../../context.js";
+import { type AWSContext, type AWSCredentials } from "../../types.js";
 
 /**
  * Service to interact with AWS Secrets Manager.
@@ -12,7 +12,7 @@ export class SecretsManagerService {
     readonly client: SecretsManagerClient;
     #context: AWSContext;
 
-    constructor(@Inject(AWS_CONTEXT_KEY) context: AWSContext) {
+    constructor(context: AWSContext) {
         this.#context = context;
         this.client = new SecretsManagerClient({
             region: context.defaultRegion,
@@ -29,7 +29,7 @@ export class SecretsManagerService {
         const client =
             credentials instanceof SecretsManagerClient
                 ? credentials
-                : new SecretsManagerClient({ credentials, region  });
+                : new SecretsManagerClient({ credentials, region });
         const response = await client.send(
             new GetSecretValueCommand({
                 SecretId: secretName,
@@ -52,7 +52,12 @@ export class SecretsManagerService {
      * Loads a secret from AWS Secrets Manager.
      */
     async loadSecret(secretName: string, versionStage: string = "AWSCURRENT"): Promise<Record<string, any>> {
-        return SecretsManagerService.loadSecret(this.client, this.#context.defaultRegion, secretName, versionStage);
+        return SecretsManagerService.loadSecret(
+            this.client,
+            this.#context.defaultRegion,
+            secretName,
+            versionStage
+        );
     }
 
     /**

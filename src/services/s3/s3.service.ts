@@ -1,6 +1,6 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { S3Client } from "@aws-sdk/client-s3";
-import { AWS_CONTEXT_KEY, type AWSContext } from "../../context.js";
+import { type AWSContext } from "../../types.js";
 
 /**
  * Provides an S3 client
@@ -9,7 +9,7 @@ import { AWS_CONTEXT_KEY, type AWSContext } from "../../context.js";
 export class S3Service {
     readonly client: S3Client;
 
-    constructor(@Inject(AWS_CONTEXT_KEY) context: AWSContext) {
+    constructor(context: AWSContext) {
         this.client = new S3Client({
             region: context.defaultRegion,
             credentials: context.credentials,

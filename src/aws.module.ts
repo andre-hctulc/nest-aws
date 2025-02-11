@@ -1,4 +1,4 @@
-import { AWS_CONTEXT_KEY, type AWSContext } from "./context.js";
+import { type AWSContext } from "./types.js";
 import {
     Module,
     type DynamicModule,
@@ -6,6 +6,8 @@ import {
     type OptionalFactoryDependency,
     type Provider,
 } from "@nestjs/common";
+
+const AWS_CONTEXT_KEY = Symbol("AWS_CONTEXT");
 
 export type AWSServiceInterface = new (context: AWSContext, ...args: any) => any;
 type AWSServiceArgs<T> = T extends new (context: AWSContext, ...args: infer A) => any ? A : never;

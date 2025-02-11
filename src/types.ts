@@ -21,5 +21,3 @@ export interface AWSContext {
         defaultSecrets: Record<string, Record<string, any>>;
     };
 }
-
-export const AWS_CONTEXT_KEY = Symbol("AWS_CONTEXT");
