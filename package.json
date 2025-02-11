@@ -1,6 +1,6 @@
 {
     "name": "@andre-hctulc/nest-aws",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Nest x AWS",
     "main": "dist/index.js",
     "type": "module",
