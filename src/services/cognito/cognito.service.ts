@@ -24,7 +24,7 @@ export class CognitoService {
     }
 
     /**
-     * Discovers the openid configuration for the user pool and creates an openid configuration.
+     * Discovers the openid configuration for the user pool and creates an `openid-client` configuration.
      */
     async openidClient(poolId: string, ...args: DiscoveryArgs): Promise<oidc.Configuration> {
         const { Id } = await this.describe(poolId);
@@ -51,5 +51,12 @@ export class CognitoService {
         }
 
         return data.UserPool;
+    }
+
+    /**
+     * Returns the URL for the user pool.
+     */
+    getUrl(poolId: string) {
+        return `https://cognito-idp.${this.client.config.region}.amazonaws.com/${poolId}`;
     }
 }
