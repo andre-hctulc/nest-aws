@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { AWS_CONTEXT_KEY, type AWSContext } from "../types.js";
+import { type AWSContext } from "../types.js";
+import { AWS_CONTEXT_KEY } from "../const.js";
 
 /**
  * Always provided
