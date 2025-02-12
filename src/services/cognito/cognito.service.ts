@@ -40,11 +40,8 @@ export class CognitoService {
             region = this.context.defaultRegion;
         }
 
-        // Optionally, you can get the user pool id dynamically using DescribeUserPool, if needed
-        const client = new CognitoIdentityProviderClient({ region });
         const command = new DescribeUserPoolCommand({ UserPoolId: poolId });
-
-        const data = await client.send(command);
+        const data = await this.client.send(command);
 
         if (!data.UserPool) {
             throw new Error("UserPool is undefined");
@@ -57,11 +54,9 @@ export class CognitoService {
         if (!region) {
             region = this.context.defaultRegion;
         }
-
-        const client = new CognitoIdentityProviderClient({ region });
         const command = new DescribeUserPoolClientCommand({ ClientId: clientId, UserPoolId: poolId });
 
-        const data = await client.send(command);
+        const data = await this.client.send(command);
 
         if (!data.UserPoolClient) {
             throw new Error("UserPoolClient is undefined");
