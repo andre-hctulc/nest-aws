@@ -25,11 +25,31 @@ export class CognitoService {
     }
 
     /**
+     * Get the user pool URL.
+     */
+    getUserPoolUrl(poolId: string) {
+        return `https://cognito-idp.${this.context.defaultRegion}.amazonaws.com/${poolId}`;
+    }
+
+    /**
      * Discovers the openid configuration for the user pool and creates an `openid-client` configuration.
      */
-    async openidClient(poolId: string, ...args: DiscoveryArgs): Promise<oidc.Configuration> {
-        const url = `https://cognito-idp.${this.context.defaultRegion}.amazonaws.com/${poolId}`;
-        return oidc.discovery(new URL(url), ...args);
+    openidClient(poolId: string, ...args: DiscoveryArgs): Promise<oidc.Configuration> {
+        return oidc.discovery(new URL(this.getUserPoolUrl(poolId)), ...args);
+    }
+
+    /**
+     * Get the auth domain. The domain is for authentication purposes.
+     */
+    getAuthDomain(poolId: string): string {
+        return `https://${poolId}.auth.${this.context.defaultRegion}.amazoncognito.com`;
+    }
+
+    async getLogoutUrl(poolId: string, clientId: string): Promise<string> {
+        const { LogoutURLs } = await this.describeUserPoolClient(poolId, clientId);
+        return `${this.getAuthDomain(poolId)}/logout?client_id=${clientId}&logout_uri=${
+            LogoutURLs?.[0] || ""
+        }`;
     }
 
     /**
@@ -63,12 +83,5 @@ export class CognitoService {
         }
 
         return data.UserPoolClient;
-    }
-
-    /**
-     * Returns the URL for the user pool.
-     */
-    getUrl(poolId: string) {
-        return `https://cognito-idp.${this.context.defaultRegion}.amazonaws.com/${poolId}`;
     }
 }
