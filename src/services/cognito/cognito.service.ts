@@ -1,5 +1,6 @@
 import {
     CognitoIdentityProviderClient,
+    DescribeUserPoolClientCommand,
     DescribeUserPoolCommand,
     UserPoolType,
 } from "@aws-sdk/client-cognito-identity-provider";
@@ -27,15 +28,14 @@ export class CognitoService {
      * Discovers the openid configuration for the user pool and creates an `openid-client` configuration.
      */
     async openidClient(poolId: string, ...args: DiscoveryArgs): Promise<oidc.Configuration> {
-        const { Id } = await this.describe(poolId);
-        const url = `https://cognito-idp.${this.client.config.region}.amazonaws.com/${Id}`;
+        const url = `https://cognito-idp.${this.client.config.region}.amazonaws.com/${poolId}`;
         return oidc.discovery(new URL(url), ...args);
     }
 
     /**
      * Describes the user pool using the {@link DescribeUserPoolCommand}.
      */
-    async describe(poolId: string, region?: string): Promise<UserPoolType> {
+    async describeUserPool(poolId: string, region?: string): Promise<UserPoolType> {
         if (!region) {
             region = this.context.defaultRegion;
         }
@@ -51,6 +51,23 @@ export class CognitoService {
         }
 
         return data.UserPool;
+    }
+
+    async describeUserPoolClient(poolId: string, clientId: string, region?: string) {
+        if (!region) {
+            region = this.context.defaultRegion;
+        }
+
+        const client = new CognitoIdentityProviderClient({ region });
+        const command = new DescribeUserPoolClientCommand({ ClientId: clientId, UserPoolId: poolId });
+
+        const data = await client.send(command);
+
+        if (!data.UserPoolClient) {
+            throw new Error("UserPoolClient is undefined");
+        }
+
+        return data.UserPoolClient;
     }
 
     /**
