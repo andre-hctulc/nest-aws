@@ -21,3 +21,5 @@ export interface AWSContext {
         defaultSecrets: Record<string, Record<string, any>>;
     };
 }
+
+export type SearchParams = URLSearchParams | Record<string, string | string[] | undefined>;

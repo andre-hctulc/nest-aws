@@ -5,8 +5,9 @@ import {
     UserPoolType,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { Injectable } from "@nestjs/common";
-import { type AWSContext } from "../../types.js";
+import { SearchParams, type AWSContext } from "../../types.js";
 import * as oidc from "openid-client";
+import { mergeSearchParams, paramsToString } from "../../util.js";
 
 type DiscoveryArgs = Parameters<typeof oidc.discovery> extends [any, ...infer A] ? A : [];
 
@@ -27,29 +28,40 @@ export class CognitoService {
     /**
      * Get the user pool URL.
      */
-    getUserPoolUrl(poolId: string) {
-        return `https://cognito-idp.${this.context.defaultRegion}.amazonaws.com/${poolId}`;
+    userPoolUrl(poolId: string, path?: string, search?: SearchParams): string {
+        if (path && !path.startsWith("/")) {
+            path = `/${path}`;
+        }
+        return `https://cognito-idp.${
+            this.context.defaultRegion
+        }.amazonaws.com/${poolId}${path}${paramsToString(mergeSearchParams(search || {}, {}))}`;
     }
 
     /**
      * Discovers the openid configuration for the user pool and creates an `openid-client` configuration.
      */
     openidClient(poolId: string, ...args: DiscoveryArgs): Promise<oidc.Configuration> {
-        return oidc.discovery(new URL(this.getUserPoolUrl(poolId)), ...args);
+        return oidc.discovery(new URL(this.userPoolUrl(poolId)), ...args);
     }
 
     /**
-     * Get the auth domain. The domain is for authentication purposes.
+     * Get the auth domain. The domain is for authentication purposes like login, logout, etc.
      */
-    getAuthDomain(poolId: string): string {
-        return `https://${poolId}.auth.${this.context.defaultRegion}.amazoncognito.com`;
+    authUrl(poolId: string, path?: string, search?: SearchParams): string {
+        if (path && !path.startsWith("/")) {
+            path = `/${path}`;
+        }
+        return `https://${poolId}.auth.${this.context.defaultRegion}.amazoncognito.com${path}${paramsToString(
+            mergeSearchParams(search || {}, {})
+        )}`;
     }
 
-    async getLogoutUrl(poolId: string, clientId: string): Promise<string> {
+    async logoutUrl(poolId: string, clientId: string, search?: SearchParams): Promise<string> {
         const { LogoutURLs } = await this.describeUserPoolClient(poolId, clientId);
-        return `${this.getAuthDomain(poolId)}/logout?client_id=${clientId}&logout_uri=${
-            LogoutURLs?.[0] || ""
-        }`;
+        const defaultSearch = new URLSearchParams({ client_id: clientId, logout_uri: LogoutURLs?.[0] || "" });
+        return `${this.authUrl(poolId)}/logout?${paramsToString(
+            mergeSearchParams(defaultSearch, search || {})
+        )}`;
     }
 
     /**
