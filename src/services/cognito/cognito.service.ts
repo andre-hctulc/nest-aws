@@ -7,7 +7,7 @@ import {
 import { Injectable } from "@nestjs/common";
 import { SearchParams, type AWSContext } from "../../types.js";
 import * as oidc from "openid-client";
-import { mergeSearchParams, paramsToString } from "../../util.js";
+import { mergeSearchParams, paramsToString, parsePath } from "../../util.js";
 
 type DiscoveryArgs = Parameters<typeof oidc.discovery> extends [any, ...infer A] ? A : [];
 
@@ -29,12 +29,9 @@ export class CognitoService {
      * Get the user pool URL.
      */
     userPoolUrl(poolId: string, path?: string, search?: SearchParams): string {
-        if (path && !path.startsWith("/")) {
-            path = `/${path}`;
-        }
-        return `https://cognito-idp.${
-            this.context.defaultRegion
-        }.amazonaws.com/${poolId}${path}${paramsToString(mergeSearchParams(search || {}, {}))}`;
+        return `https://cognito-idp.${this.context.defaultRegion}.amazonaws.com/${poolId}${parsePath(
+            path
+        )}${paramsToString(mergeSearchParams(search || {}, {}))}`;
     }
 
     /**
@@ -48,21 +45,15 @@ export class CognitoService {
      * Get the auth domain. The domain is for authentication purposes like login, logout, etc.
      */
     authUrl(poolId: string, path?: string, search?: SearchParams): string {
-        if (path) {
-            if (!path.startsWith("/")) path = `/${path}`;
-        } else {
-            path = "";
-        }
-
-        return `https://${poolId}.auth.${this.context.defaultRegion}.amazoncognito.com${path}${paramsToString(
-            mergeSearchParams(search || {}, {})
-        )}`;
+        return `https://${poolId}.auth.${this.context.defaultRegion}.amazoncognito.com${parsePath(
+            path
+        )}${paramsToString(mergeSearchParams(search || {}, {}))}`;
     }
 
     async logoutUrl(poolId: string, clientId: string, search?: SearchParams): Promise<string> {
         const { LogoutURLs } = await this.describeUserPoolClient(poolId, clientId);
         const defaultSearch = new URLSearchParams({ client_id: clientId, logout_uri: LogoutURLs?.[0] || "" });
-        return `${this.authUrl(poolId)}/logout?${paramsToString(
+        return `${this.authUrl(poolId, "logout")}${paramsToString(
             mergeSearchParams(defaultSearch, search || {})
         )}`;
     }

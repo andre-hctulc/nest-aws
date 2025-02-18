@@ -38,3 +38,10 @@ export function paramsToString(params: URLSearchParams) {
     const hasParams = Object.keys(params).length > 0;
     return hasParams ? "?" + params.toString() : "";
 }
+
+export function parsePath(path: string | undefined) {
+    if (path && !path.startsWith("/")) {
+        return `/${path}`;
+    }
+    return path || "";
+}
