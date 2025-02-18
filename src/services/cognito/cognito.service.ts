@@ -48,9 +48,12 @@ export class CognitoService {
      * Get the auth domain. The domain is for authentication purposes like login, logout, etc.
      */
     authUrl(poolId: string, path?: string, search?: SearchParams): string {
-        if (path && !path.startsWith("/")) {
-            path = `/${path}`;
+        if (path) {
+            if (!path.startsWith("/")) path = `/${path}`;
+        } else {
+            path = "";
         }
+
         return `https://${poolId}.auth.${this.context.defaultRegion}.amazoncognito.com${path}${paramsToString(
             mergeSearchParams(search || {}, {})
         )}`;
