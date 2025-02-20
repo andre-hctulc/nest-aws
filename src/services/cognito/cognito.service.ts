@@ -38,6 +38,8 @@ export class CognitoService {
      * Get the auth domain. The domain is for authentication purposes like login, logout, etc.
      */
     authUrl(poolId: string, path?: string, search?: SearchParams): string {
+        // aws urls don't use underscores, but user pool ids might, they are replaced with dashes
+        poolId = poolId.replace("_", "-");
         return `https://${poolId}.auth.${this.context.defaultRegion}.amazoncognito.com${parsePath(
             path
         )}${paramsToString(mergeSearchParams(search || {}, {}))}`;
