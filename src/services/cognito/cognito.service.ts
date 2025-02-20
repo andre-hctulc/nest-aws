@@ -31,14 +31,7 @@ export class CognitoService {
     userPoolUrl(poolId: string, path?: string, search?: SearchParams): string {
         return `https://cognito-idp.${this.context.defaultRegion}.amazonaws.com/${poolId}${parsePath(
             path
-        )}${paramsToString(mergeSearchParams(search || {}, {}))}`;
-    }
-
-    /**
-     * Discovers the openid configuration for the user pool and creates an `openid-client` configuration.
-     */
-    openidClient(poolId: string, ...args: DiscoveryArgs): Promise<oidc.Configuration> {
-        return oidc.discovery(new URL(this.userPoolUrl(poolId)), ...args);
+        )}${paramsToString(mergeSearchParams(search || {}))}`;
     }
 
     /**
@@ -50,12 +43,31 @@ export class CognitoService {
         )}${paramsToString(mergeSearchParams(search || {}, {}))}`;
     }
 
-    async logoutUrl(poolId: string, clientId: string, search?: SearchParams): Promise<string> {
+    /**
+     * @param redirectUri Defaults to the first logout callback URL.
+     */
+    async logoutUrl(
+        poolId: string,
+        clientId: string,
+        redirectUri?: string,
+        search?: SearchParams
+    ): Promise<string> {
         const { LogoutURLs } = await this.describeUserPoolClient(poolId, clientId);
-        const defaultSearch = new URLSearchParams({ client_id: clientId, logout_uri: LogoutURLs?.[0] || "" });
-        return `${this.authUrl(poolId, "logout")}${paramsToString(
-            mergeSearchParams(defaultSearch, search || {})
-        )}`;
+        return this.authUrl(
+            poolId,
+            "logout",
+            mergeSearchParams(
+                { client_id: clientId, logout_uri: redirectUri || LogoutURLs?.[0] || "" },
+                search || {}
+            )
+        );
+    }
+
+    /**
+     * Discovers the openid configuration for the user pool and creates an `openid-client` configuration.
+     */
+    openidClient(poolId: string, ...args: DiscoveryArgs): Promise<oidc.Configuration> {
+        return oidc.discovery(new URL(this.userPoolUrl(poolId)), ...args);
     }
 
     /**

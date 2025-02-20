@@ -22,21 +22,23 @@ function parseSearchParams(search: SearchParams): URLSearchParams {
     return searchParams;
 }
 
-export function mergeSearchParams(p1: SearchParams, p2: SearchParams) {
-    const search = parseSearchParams(p1);
-    const p2Search = parseSearchParams(p2);
-    for (const key of p2Search.keys()) {
-        const values = p2Search.getAll(key);
-        for (const value of values) {
-            search.append(key, value);
+export function mergeSearchParams(...params: SearchParams[]) {
+    const search = new URLSearchParams();
+
+    for (const param of params) {
+        const searchParams = parseSearchParams(param);
+        for (const key of searchParams.keys()) {
+            for (const value of searchParams.getAll(key)) {
+                search.append(key, value);
+            }
         }
     }
+
     return search;
 }
 
 export function paramsToString(params: URLSearchParams) {
-    const hasParams = Object.keys(params).length > 0;
-    return hasParams ? "?" + params.toString() : "";
+    return params.size > 0 ? "?" + params.toString() : "";
 }
 
 export function parsePath(path: string | undefined) {
