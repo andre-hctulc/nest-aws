@@ -1,10 +1,14 @@
 # nest-aws
 
-[NestJS](https://nestjs.com) x AWS (v3)
+[NestJS](https://nestjs.com) x AWS
 
 ## Usage
 
 ```ts
+import { AWSModule, configFor } from "nest-aws";
+import { S3Service } from "nest-aws/s3";
+import { SecretsManagerService } from "nest-aws/secrets-manager";
+
 @Module({
     imports: [
         AWSModule.configure({
@@ -12,7 +16,11 @@
             context: {
                 credentials: { ... },
             },
-            services: [configFor(S3Service)],
+            // `configFor` takes arguments for service constructors
+            services: [
+                configFor(S3Service),
+                configFor(SecretsManagerService)
+            ],
             global: false,
             defaultRegion: "us-east-1"
         }),

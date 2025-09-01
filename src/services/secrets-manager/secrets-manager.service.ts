@@ -79,4 +79,20 @@ export class SecretsManagerService {
 
         return secret[varName];
     }
+
+    /**
+     * Get a default secret.
+     */
+    getRaw(secretName?: string): Record<string, any> {
+        const keys = Object.keys(this.#context._system.defaultSecrets || {});
+
+        if (!keys.length) {
+            throw new Error("No default secrets loaded");
+        }
+
+        secretName = secretName || keys[0];
+        const secret = this.#context._system.defaultSecrets[secretName];
+
+        return structuredClone(secret);
+    }
 }
