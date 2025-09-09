@@ -1,13 +1,17 @@
 import { Injectable, PreconditionFailedException } from "@nestjs/common";
-import { STS } from "@aws-sdk/client-sts";
+import { STS, STSClientConfig } from "@aws-sdk/client-sts";
 import type { AWSContext } from "../../types.js";
 
 @Injectable()
 export class STSService {
     private client: STS;
 
-    constructor(context: AWSContext) {
-        this.client = new STS();
+    constructor(context: AWSContext, config?: Partial<STSClientConfig>) {
+        this.client = new STS({
+            region: context.defaultRegion,
+            credentials: context.credentials,
+            ...config,
+        });
     }
     /**
      * @param cacheTime Cache time in seconds
