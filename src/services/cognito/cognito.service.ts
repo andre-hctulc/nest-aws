@@ -1,5 +1,6 @@
 import {
     CognitoIdentityProviderClient,
+    CognitoIdentityProviderClientConfig,
     DescribeUserPoolClientCommand,
     DescribeUserPoolCommand,
     UserPoolType,
@@ -17,11 +18,14 @@ type DiscoveryArgs = Parameters<typeof oidc.discovery> extends [any, ...infer A]
 @Injectable()
 export class CognitoService {
     readonly client: CognitoIdentityProviderClient;
+    #context: AWSContext;
 
-    constructor(private context: AWSContext) {
+    constructor(context: AWSContext, config?: Partial<CognitoIdentityProviderClientConfig>) {
+        this.#context = context;
         this.client = new CognitoIdentityProviderClient({
             region: context.defaultRegion,
             credentials: context.credentials,
+            ...config,
         });
     }
 
@@ -29,13 +33,13 @@ export class CognitoService {
      * Get the user pool URL.
      */
     userPoolUrl(poolId: string, path?: string, search?: SearchParams): string {
-        return `https://cognito-idp.${this.context.defaultRegion}.amazonaws.com/${poolId}${parsePath(
+        return `https://cognito-idp.${this.#context.defaultRegion}.amazonaws.com/${poolId}${parsePath(
             path
         )}${paramsToString(mergeSearchParams(search || {}))}`;
     }
 
     private poolIdToDomain(poolId: string) {
-        // aws urls don't use underscores in the domain, but user pool ids might include them, 
+        // aws urls don't use underscores in the domain, but user pool ids might include them,
         // they are removed
         return poolId.replace("_", "");
     }
@@ -45,7 +49,7 @@ export class CognitoService {
      */
     authUrl(poolId: string, path?: string, search?: SearchParams): string {
         poolId = this.poolIdToDomain(poolId);
-        return `https://${poolId}.auth.${this.context.defaultRegion}.amazoncognito.com${parsePath(
+        return `https://${poolId}.auth.${this.#context.defaultRegion}.amazoncognito.com${parsePath(
             path
         )}${paramsToString(mergeSearchParams(search || {}, {}))}`;
     }
@@ -82,7 +86,7 @@ export class CognitoService {
      */
     async describeUserPool(poolId: string, region?: string): Promise<UserPoolType> {
         if (!region) {
-            region = this.context.defaultRegion;
+            region = this.#context.defaultRegion;
         }
 
         const command = new DescribeUserPoolCommand({ UserPoolId: poolId });
@@ -97,7 +101,7 @@ export class CognitoService {
 
     async describeUserPoolClient(poolId: string, clientId: string, region?: string) {
         if (!region) {
-            region = this.context.defaultRegion;
+            region = this.#context.defaultRegion;
         }
         const command = new DescribeUserPoolClientCommand({ ClientId: clientId, UserPoolId: poolId });
 

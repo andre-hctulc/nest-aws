@@ -121,7 +121,8 @@ export class AWSModule {
                         }
                     },
                     inject: ctxInj,
-                }, // Service factories
+                },
+                // Service factories
                 ...activeServices.map<Provider>((obj) => {
                     const Service = obj.service;
                     const inj = "inject" in obj.args ? obj.args.inject || [] : [];

@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import {
+    SecretsManagerClient,
+    GetSecretValueCommand,
+    SecretsManagerClientConfig,
+} from "@aws-sdk/client-secrets-manager";
 import { type AWSContext, type AWSCredentials } from "../../types.js";
 
 /**
@@ -12,11 +16,12 @@ export class SecretsManagerService {
     readonly client: SecretsManagerClient;
     #context: AWSContext;
 
-    constructor(context: AWSContext) {
+    constructor(context: AWSContext, config?: Partial<SecretsManagerClientConfig>) {
         this.#context = context;
         this.client = new SecretsManagerClient({
             region: context.defaultRegion,
             credentials: context.credentials,
+            ...config,
         });
     }
 

@@ -9,7 +9,8 @@
         "./s3": "./dist/services/s3/index.js",
         "./sts": "./dist/services/sts/index.js",
         "./secrets-manager": "./dist/services/secrets-manager/index.js",
-        "./cognito": "./dist/services/cognito/index.js"
+        "./cognito": "./dist/services/cognito/index.js",
+        "./kms": "./dist/services/kms/index.js"
     },
     "scripts": {
         "tc": "tsc --noEmit",
@@ -26,6 +27,7 @@
     "license": "ISC",
     "devDependencies": {
         "@aws-sdk/client-cognito-identity-provider": "^3.744.0",
+        "@aws-sdk/client-kms": "^3.883.0",
         "@aws-sdk/client-s3": "^3.744.0",
         "@aws-sdk/client-secrets-manager": "^3.744.0",
         "@aws-sdk/client-sts": "^3.744.0",
