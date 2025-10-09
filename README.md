@@ -1,4 +1,4 @@
-# nest-aws
+# tsdev
 
 [NestJS](https://nestjs.com) x AWS
 
@@ -18,7 +18,7 @@ import { SecretsManagerService } from "nest-aws/secrets-manager";
             },
             // `configFor` takes arguments for service constructors
             services: [
-                configFor(S3Service),
+                configFor(S3Service, {} /* custom s3 client config */),
                 configFor(SecretsManagerService)
             ],
             global: false,
