@@ -1,5 +1,5 @@
-import { AWS_CONTEXT_KEY } from "./const.js";
-import { type AWSContext } from "./types.js";
+import { AWS_CONTEXT_KEY } from "../const.js";
+import { type AWSContext } from "../types.js";
 import {
     Module,
     type DynamicModule,
@@ -85,7 +85,7 @@ export class AWSModule {
                 // populate secrets if we have any
                 if (secretsNames.length) {
                     // Only load secrets module if we have secrets to load
-                    const { SecretsManagerService } = await import("./services/secrets-manager/index.js");
+                    const { SecretsManagerService } = await import("../services/secrets-manager/index.js");
 
                     for (const secretName of secretsNames) {
                         ctx._system.defaultSecrets[secretName] = await SecretsManagerService.loadSecret(

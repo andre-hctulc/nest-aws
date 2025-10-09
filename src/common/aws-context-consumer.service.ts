@@ -6,7 +6,7 @@ import { AWS_CONTEXT_KEY } from "../const.js";
  * Always provided
  */
 @Injectable()
-export class AWSService {
+export class AWSContextConsumerService {
     #context: AWSContext;
 
     constructor(@Inject(AWS_CONTEXT_KEY) context: AWSContext) {

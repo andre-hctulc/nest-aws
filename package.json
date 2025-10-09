@@ -27,12 +27,12 @@
     "author": "André Thomas",
     "license": "ISC",
     "devDependencies": {
-        "@aws-sdk/client-cognito-identity-provider": "^3.744.0",
+        "@aws-sdk/client-cognito-identity-provider": "^3.906.0",
         "@aws-sdk/client-dynamodb": "^3.906.0",
-        "@aws-sdk/client-kms": "^3.883.0",
-        "@aws-sdk/client-s3": "^3.744.0",
-        "@aws-sdk/client-secrets-manager": "^3.744.0",
-        "@aws-sdk/client-sts": "^3.744.0",
+        "@aws-sdk/client-kms": "^3.906.0",
+        "@aws-sdk/client-s3": "^3.906.0",
+        "@aws-sdk/client-secrets-manager": "^3.906.0",
+        "@aws-sdk/client-sts": "^3.906.0",
         "@aws-sdk/lib-dynamodb": "^3.906.0",
         "@types/node": "^22.7.4",
         "openid-client": "^6.1.7"
