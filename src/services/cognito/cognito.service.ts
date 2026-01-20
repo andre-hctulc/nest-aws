@@ -31,6 +31,8 @@ export class CognitoService {
 
     /**
      * Get the user pool URL.
+     * @example 
+     * userPoolUrl("us-east-1_123456789", "/.well-known/jwks.json")
      */
     userPoolUrl(poolId: string, path?: string, search?: SearchParams): string {
         return `https://cognito-idp.${this.#context.defaultRegion}.amazonaws.com/${poolId}${parsePath(
