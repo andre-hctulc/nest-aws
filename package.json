@@ -1,6 +1,6 @@
 {
     "name": "@dre44/nest-aws",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "Nest x AWS",
     "main": "dist/index.js",
     "type": "module",
