@@ -79,8 +79,8 @@ export class AWSModule {
                 const secretsNames = Array.isArray(ctx.secrets)
                     ? ctx.secrets
                     : ctx.secrets
-                    ? [ctx.secrets]
-                    : [];
+                      ? [ctx.secrets]
+                      : [];
 
                 // populate secrets if we have any
                 if (secretsNames.length) {
@@ -91,7 +91,9 @@ export class AWSModule {
                         ctx._system.defaultSecrets[secretName] = await SecretsManagerService.loadSecret(
                             userCtx.credentials,
                             ctx.defaultRegion,
-                            secretName
+                            secretName,
+                            undefined,
+                            true,
                         );
                     }
                 }

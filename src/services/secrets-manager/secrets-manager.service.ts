@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import {
     SecretsManagerClient,
     GetSecretValueCommand,
@@ -25,12 +25,18 @@ export class SecretsManagerService {
         });
     }
 
+    private static logger = new Logger(SecretsManagerService.name);
+
     static async loadSecret(
         credentials: AWSCredentials | SecretsManagerClient,
         region: string,
         secretName: string,
-        versionStage: string = "AWSCURRENT"
+        versionStage: string | undefined,
+        log = false,
     ): Promise<Record<string, any>> {
+        if(!versionStage) {
+            versionStage = "AWSCURRENT";
+        }
         const client =
             credentials instanceof SecretsManagerClient
                 ? credentials
@@ -39,29 +45,29 @@ export class SecretsManagerService {
             new GetSecretValueCommand({
                 SecretId: secretName,
                 VersionStage: versionStage,
-            })
+            }),
         );
 
         if (!response.SecretString) {
             throw new Error("Secret is empty");
         }
 
-        try {
-            return JSON.parse(response.SecretString);
-        } catch (e) {
-            throw new Error("Failed to parse secret");
+        const re = JSON.parse(response.SecretString);
+        if (log) {
+            SecretsManagerService.logger.debug(`Loaded secret '${secretName}' from AWS Secrets Manager`);
         }
+        return re;
     }
 
     /**
      * Loads a secret from AWS Secrets Manager.
      */
-    async loadSecret(secretName: string, versionStage: string = "AWSCURRENT"): Promise<Record<string, any>> {
+    async loadSecret(secretName: string, versionStage?: string): Promise<Record<string, any>> {
         return SecretsManagerService.loadSecret(
             this.client,
             this.#context.defaultRegion,
             secretName,
-            versionStage
+            versionStage,
         );
     }
 
