@@ -34,9 +34,16 @@ export class SecretsManagerService {
         versionStage: string | undefined,
         log = false,
     ): Promise<Record<string, any>> {
-        if(!versionStage) {
+        if (!versionStage) {
             versionStage = "AWSCURRENT";
         }
+
+        if (log) {
+            SecretsManagerService.logger.debug(
+                `Attempting to load secret '${secretName}' from AWS Secrets Manager`,
+            );
+        }
+
         const client =
             credentials instanceof SecretsManagerClient
                 ? credentials
